@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus, Trash2, Loader2, Copy } from "lucide-react";
+import { Plus, Trash2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { PageHeader } from "@/components/dashboard/DashboardLayout";
@@ -65,11 +65,10 @@ export default function Settings() {
       toast.success("Settings saved");
     } catch (e) { toast.error(errMsg(e)); } finally { setSaving(false); }
   };
-  const snippet = `<script src="${process.env.REACT_APP_BACKEND_URL}/api/embed.js" async></script>`;
 
   return (
     <div className="h-full overflow-y-auto fm-scroll" data-testid="settings-page">
-      <PageHeader tag="05" title="Settings" desc="Automated messages, quick answers, AI assistant and integrations.">
+      <PageHeader tag="07 — Automations" title="Automations & integrations" desc="Welcome and offline messages, keyword quick answers, AI assistant and Tawk.to.">
         <button onClick={save} disabled={saving} data-testid="settings-save-button" className="inline-flex items-center gap-2 rounded-md bg-[#104e35] px-4 py-2 text-sm font-medium text-white hover:bg-[#03402a] disabled:opacity-60">
           {saving && <Loader2 className="h-4 w-4 animate-spin" />}Save changes</button>
       </PageHeader>
@@ -85,14 +84,7 @@ export default function Settings() {
             <Toggle label="Keyword quick answers" desc="Reply instantly when a visitor's message contains a trigger keyword." checked={s.keyword_answers_enabled} onChange={set("keyword_answers_enabled")} testid="settings-keyword-toggle" />
             <Toggle label="AI assistant" desc="Claude answers questions until a human agent replies, using only Franceman's published facts." checked={s.ai_enabled} onChange={set("ai_enabled")} testid="settings-ai-toggle" />
           </Card>
-          <Card tag="04" title="Install on francemann.com" desc="Paste this before </body> on every page of your website.">
-            <div className="flex items-center gap-2">
-              <code className="flex-1 overflow-x-auto whitespace-nowrap rounded-md bg-[#0e241a] px-3 py-2.5 text-xs text-[#f3f1ea]" data-testid="embed-snippet">{snippet}</code>
-              <button onClick={() => { navigator.clipboard.writeText(snippet); toast.success("Copied"); }} className="rounded-md border border-[#dfddd8] p-2.5 hover:bg-[#f1f0ec]" data-testid="embed-copy-button"><Copy className="h-4 w-4" /></button>
-            </div>
-            <p className="text-xs text-[#6b746c]">Remove the existing Tawk.to embed from the site so visitors only see the Franceman widget.</p>
-          </Card>
-          <Card tag="05" title="Tawk.to integration" desc="Optional backup channel. Conversations normally stay inside this platform.">
+          <Card tag="04" title="Tawk.to integration" desc="Optional backup channel. Conversations normally stay inside this platform.">
             <div className="space-y-1 text-sm">
               <div className="flex justify-between"><span className="text-[#6b746c]">Site ID</span><span className="font-mono text-xs" data-testid="tawk-site-id">{tawk?.site_id}</span></div>
               <div className="flex justify-between"><span className="text-[#6b746c]">API key</span><span className="text-xs" data-testid="tawk-api-key-status">{tawk?.api_key_configured ? "Configured on server" : "Not configured"}</span></div>

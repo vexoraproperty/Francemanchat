@@ -33,9 +33,9 @@ function Header({ online, onClose, onEnd, canEnd }) {
       {canEnd && (
         <button onClick={onEnd} className="rounded-md px-2 py-1 text-xs text-white/80 hover:bg-white/10 hover:text-white" data-testid="widget-end-chat-button">End chat</button>
       )}
-      <button onClick={onClose} aria-label="Minimise chat" className="rounded-md p-1.5 hover:bg-white/10" data-testid="widget-close-button">
+      {onClose && <button onClick={onClose} aria-label="Minimise chat" className="rounded-md p-1.5 hover:bg-white/10" data-testid="widget-close-button">
         <X className="h-4 w-4" />
-      </button>
+      </button>}
     </div>
   );
 }
@@ -47,9 +47,10 @@ const PANEL = {
 };
 const LAUNCHER_OPEN = { auto: "hidden sm:flex", floating: "flex", full: "hidden" };
 
-export function ChatWidget({ initialPage, page, onOpenChange, layout = "auto" }) {
+export function ChatWidget({ initialPage, page, onOpenChange, layout = "auto", alwaysOpen = false }) {
   const chat = useVisitorChat(initialPage);
-  const [open, setOpen] = useState(false);
+  const [isOpen, setOpen] = useState(false);
+  const open = alwaysOpen || isOpen;
   const [unread, setUnread] = useState(0);
   const seen = useRef(0);
   const { visitor, messages, conversation, config, agentsOnline, trackPage } = chat;
@@ -70,7 +71,7 @@ export function ChatWidget({ initialPage, page, onOpenChange, layout = "auto" })
     <>
       {open && (
         <div data-testid="chat-widget-panel" className={`fm-rise fm-shadow-float z-[60] flex flex-col overflow-hidden bg-white ${PANEL[layout]}`}>
-          <Header online={online} onClose={() => setOpen(false)} onEnd={chat.endChat} canEnd={visitor?.identified && conversation && !closed} />
+          <Header online={online} onClose={alwaysOpen ? null : () => setOpen(false)} onEnd={chat.endChat} canEnd={visitor?.identified && conversation && !closed} />
           {!chat.ready ? (
             <div className="flex flex-1 items-center justify-center"><Loader2 className="h-5 w-5 animate-spin text-[#104e35]" /></div>
           ) : chat.error ? (
@@ -98,14 +99,14 @@ export function ChatWidget({ initialPage, page, onOpenChange, layout = "auto" })
           <div className="bg-white pb-[env(safe-area-inset-bottom)] text-center text-[10px] tracking-wide text-[#6b746c] py-1.5 border-t border-[#f0eee9]">Franceman Exportation LLP · Secure chat</div>
         </div>
       )}
-      <button onClick={() => setOpen((o) => !o)} aria-label={open ? "Close chat" : "Open chat"} data-testid="chat-widget-launcher"
+      {!alwaysOpen && <button onClick={() => setOpen((o) => !o)} aria-label={open ? "Close chat" : "Open chat"} data-testid="chat-widget-launcher"
         className={`fm-shadow-float fixed bottom-6 right-6 z-[61] h-14 w-14 items-center justify-center rounded-full bg-[#104e35] text-white transition-colors hover:bg-[#03402a] ${open ? LAUNCHER_OPEN[layout] : "flex"}`}>
         {open ? <X className="h-5 w-5" /> : <MessageSquare className="h-5 w-5" />}
         {!open && unread > 0 && (
           <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#a12f2e] px-1 text-[11px] font-semibold" data-testid="chat-widget-unread-badge">{unread}</span>
         )}
         {!open && <span className={`absolute bottom-0.5 right-0.5 h-3 w-3 rounded-full ring-2 ring-white ${online ? "bg-[#22a861]" : "bg-[#a6b1a7]"}`} />}
-      </button>
+      </button>}
     </>
   );
 }

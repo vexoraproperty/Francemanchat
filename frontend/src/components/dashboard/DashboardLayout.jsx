@@ -1,17 +1,20 @@
-import { NavLink, Outlet, Link } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
 import { UserButton } from "@clerk/react";
-import { Inbox, Radar, BarChart3, Users, Settings2, Globe, Loader2, ShieldAlert } from "lucide-react";
+import { Inbox, Radar, BarChart3, Users, Settings2, Loader2, ShieldAlert, LayoutDashboard, Contact, MessageSquareCode } from "lucide-react";
 import { toast } from "sonner";
 import { LogoMark, Wordmark } from "@/components/Brand";
 import { useSupport } from "@/context/SupportContext";
 import { errMsg } from "@/lib/api";
 
 const NAV = [
+  { to: "/overview", label: "Overview", icon: LayoutDashboard, tag: "00" },
   { to: "/inbox", label: "Inbox", icon: Inbox, tag: "01" },
-  { to: "/visitors", label: "Live visitors", icon: Radar, tag: "02" },
-  { to: "/analytics", label: "Analytics", icon: BarChart3, tag: "03", admin: true },
-  { to: "/team", label: "Team & roles", icon: Users, tag: "04", admin: true },
-  { to: "/settings", label: "Settings", icon: Settings2, tag: "05", admin: true },
+  { to: "/visitors", label: "Monitoring", icon: Radar, tag: "02" },
+  { to: "/contacts", label: "Contacts", icon: Contact, tag: "03" },
+  { to: "/analytics", label: "Reporting", icon: BarChart3, tag: "04", admin: true },
+  { to: "/widget-setup", label: "Chat widget", icon: MessageSquareCode, tag: "05", admin: true },
+  { to: "/team", label: "Team & roles", icon: Users, tag: "06", admin: true },
+  { to: "/settings", label: "Automations", icon: Settings2, tag: "07", admin: true },
 ];
 
 function StatusToggle() {
@@ -44,9 +47,6 @@ function Sidebar({ items }) {
             <n.icon className="h-4 w-4" /><span className="flex-1">{n.label}</span><span className="text-[10px] tracking-wider opacity-50">§ {n.tag}</span>
           </NavLink>
         ))}
-        <Link to="/" className="mt-4 flex items-center gap-3 rounded-md px-3 py-2.5 text-sm text-[#a6b1a7] hover:bg-[#1a3025] hover:text-[#f3f1ea]" data-testid="nav-website">
-          <Globe className="h-4 w-4" />Website & widget
-        </Link>
       </nav>
       <div className="flex items-center justify-between border-t border-[#27362e] p-4"><StatusToggle /><UserButton /></div>
     </aside>
@@ -55,10 +55,10 @@ function Sidebar({ items }) {
 
 function MobileNav({ items }) {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 flex border-t border-[#27362e] bg-[#0e241a] pb-[env(safe-area-inset-bottom)] md:hidden" data-testid="mobile-nav">
+    <nav className="fixed inset-x-0 bottom-0 z-40 flex overflow-x-auto border-t border-[#27362e] bg-[#0e241a] pb-[env(safe-area-inset-bottom)] md:hidden" data-testid="mobile-nav">
       {items.map((n) => (
         <NavLink key={n.to} to={n.to} data-testid={`mobile-nav-${n.to.slice(1)}`}
-          className={({ isActive }) => `flex flex-1 flex-col items-center gap-1 py-2.5 text-[10px] ${isActive ? "text-[#f3f1ea]" : "text-[#a6b1a7]"}`}>
+          className={({ isActive }) => `flex min-w-[72px] flex-1 flex-col items-center gap-1 py-2.5 text-[10px] ${isActive ? "text-[#f3f1ea]" : "text-[#a6b1a7]"}`}>
           <n.icon className="h-4 w-4" />{n.label.split(" ")[0]}
         </NavLink>
       ))}
@@ -73,7 +73,7 @@ function Pending({ me }) {
         <ShieldAlert className="mx-auto h-8 w-8 text-[#825a17]" />
         <h1 className="mt-4 text-xl font-semibold">Awaiting approval</h1>
         <p className="mt-2 text-sm text-[#4b554d]">You are signed in as {me?.email}. An administrator needs to approve your account as a support agent before you can access conversations.</p>
-        <div className="mt-6 flex justify-center gap-3"><UserButton /><Link to="/" className="text-sm text-[#104e35] hover:underline">Back to website</Link></div>
+        <div className="mt-6 flex justify-center gap-3"><UserButton /></div>
       </div>
     </div>
   );
@@ -103,8 +103,8 @@ export default function DashboardLayout() {
 export const PageHeader = ({ tag, title, desc, children }) => (
   <div className="flex flex-wrap items-end justify-between gap-4 border-b border-[#dfddd8] bg-white px-5 py-5 md:px-8">
     <div>
-      <div className="fm-eyebrow">§ {tag}</div>
-      <h1 className="mt-1 text-[22px] font-semibold tracking-tight">{title}</h1>
+      <div className="fm-mono-eyebrow">§ {tag}</div>
+      <h1 className="font-display mt-1 text-[30px] font-semibold leading-tight text-[#104e35]">{title}</h1>
       {desc && <p className="mt-1 text-sm text-[#4b554d]">{desc}</p>}
     </div>
     {children}

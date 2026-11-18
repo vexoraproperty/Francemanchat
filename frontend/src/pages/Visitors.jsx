@@ -50,7 +50,7 @@ export default function Visitors() {
 
   return (
     <div className="h-full overflow-y-auto fm-scroll" data-testid="visitors-page">
-      <PageHeader tag="02" title="Live visitors" desc="Everyone on the website right now — who they are, where they are and what they are doing.">
+      <PageHeader tag="02 — Monitoring" title="Live visitors" desc="Everyone on your website right now — who they are, where they are, which page they are on and whether they are typing.">
         <div className="flex rounded-md border border-[#dfddd8] bg-[#fafaf7] p-0.5 text-xs">
           <button onClick={() => setShowAll(false)} data-testid="visitors-filter-online" className={`rounded px-3 py-1 ${!showAll ? "bg-white font-medium text-[#104e35] shadow-sm" : "text-[#4b554d]"}`}>Online now</button>
           <button onClick={() => setShowAll(true)} data-testid="visitors-filter-24h" className={`rounded px-3 py-1 ${showAll ? "bg-white font-medium text-[#104e35] shadow-sm" : "text-[#4b554d]"}`}>Last 24 hours</button>

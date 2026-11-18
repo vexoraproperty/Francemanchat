@@ -515,6 +515,45 @@ async def list_visitors(member: dict = Depends(require_staff), hours: int = Quer
     return sorted(out, key=lambda v: (not v["online"], -(datetime.fromisoformat(v["last_seen"]).timestamp() if v.get("last_seen") else 0)))
 
 
+@api.get("/overview")
+async def overview(member: dict = Depends(require_staff)):
+    today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0).isoformat()
+    open_convs = await db.conversations.find({"status": "open"}, P0).sort("last_message_at", -1).to_list(500)
+    waiting = [c for c in open_convs if c.get("last_sender") == "visitor"]
+    recent = open_convs[:8]
+    vmap = await visitors_by_id(c["visitor_id"] for c in recent)
+    agents = await db.users.find({**IN_ENV, "role": {"$in": list(STAFF_ROLES)}}, P0).to_list(500)
+    online = set(hub.online_agent_ids())
+    return {
+        "visitors_online": len(hub.visitors), "open_chats": len(open_convs), "waiting_chats": len(waiting),
+        "unassigned_chats": sum(1 for c in open_convs if not c.get("assigned_agent_id")),
+        "my_chats": sum(1 for c in open_convs if c.get("assigned_agent_id") == member["user_id"]),
+        "chats_today": await db.conversations.count_documents({"created_at": {"$gte": today}}),
+        "messages_today": await db.messages.count_documents({"created_at": {"$gte": today}, "sender_type": {"$in": ["visitor", "agent"]}}),
+        "agents": [{"user_id": a["user_id"], "name": a.get("name", ""), "role": effective_role(a.get("role")),
+                    "online": a["user_id"] in online, "status": hub.agent_status.get(a["user_id"], a.get("status", "online"))} for a in agents],
+        "recent": [{**c, "visitor": vmap.get(c["visitor_id"])} for c in recent],
+    }
+
+
+@api.get("/contacts")
+async def contacts(member: dict = Depends(require_staff), q: str = ""):
+    query: dict = {"identified": True}
+    if q.strip():
+        import re
+        rx = {"$regex": re.escape(q.strip()), "$options": "i"}
+        query["$or"] = [{"name": rx}, {"email": rx}, {"country": rx}, {"city": rx}, {"commodity": rx}]
+    docs = await db.visitors.find(query, P0).sort("last_seen", -1).to_list(1000)
+    stats = await db.conversations.aggregate([
+        {"$match": {"visitor_id": {"$in": [d["id"] for d in docs]}}},
+        {"$sort": {"created_at": -1}},
+        {"$group": {"_id": "$visitor_id", "chats": {"$sum": 1}, "latest": {"$first": "$id"}}},
+    ]).to_list(1000)
+    smap = {s["_id"]: s for s in stats}
+    return [{**visitor_public(d), "chats": smap.get(d["id"], {}).get("chats", 0),
+             "latest_conversation_id": smap.get(d["id"], {}).get("latest")} for d in docs]
+
+
 # ---------- admin ----------
 class RoleIn(BaseModel):
     role: str

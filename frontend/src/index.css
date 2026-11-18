@@ -71,6 +71,21 @@ code, .font-mono {
     color: hsl(var(--muted-foreground));
 }
 
+.font-display {
+    font-family: "Cormorant Garamond", Georgia, serif;
+    letter-spacing: -0.01em;
+}
+
+.fm-mono-eyebrow {
+    font-family: "Geist Mono", ui-monospace, monospace;
+    font-size: 11px;
+    line-height: 14px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #1d643d;
+}
+
 .fm-shadow-float {
     box-shadow: 0 10px 25px -5px rgba(16, 78, 53, 0.18), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
 }

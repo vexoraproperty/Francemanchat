@@ -22,7 +22,7 @@ export default function Team() {
 
   return (
     <div className="h-full overflow-y-auto fm-scroll" data-testid="team-page">
-      <PageHeader tag="04" title="Team & roles" desc="Approve new agents and decide who can administer the support desk." />
+      <PageHeader tag="06 — Administration" title="Team & roles" desc="Approve new agents and decide who can administer the support desk." />
       <div className="space-y-6 p-5 md:p-8">
         <div className="rounded-lg border border-[#dfddd8] bg-white p-5 text-sm text-[#4b554d]">
           To add an agent, ask them to create an account at <span className="font-medium text-[#121713]">{window.location.origin}/sign-up</span> with email and password or Google.

@@ -27,7 +27,7 @@ export default function Analytics() {
   const maxCountry = Math.max(1, ...(data?.countries || []).map((c) => c.count));
   return (
     <div className="h-full overflow-y-auto fm-scroll" data-testid="analytics-page">
-      <PageHeader tag="03" title="Support performance" desc="Conversation volume, response speed and agent workload.">
+      <PageHeader tag="04 — Reporting" title="Support performance" desc="Conversation volume, response speed and agent workload.">
         <div className="flex rounded-md border border-[#dfddd8] bg-[#fafaf7] p-0.5 text-xs">
           {[7, 30, 90].map((d) => (
             <button key={d} onClick={() => setDays(d)} data-testid={`analytics-range-${d}`} className={`rounded px-3 py-1 ${days === d ? "bg-white font-medium text-[#104e35] shadow-sm" : "text-[#4b554d]"}`}>{d} days</button>
