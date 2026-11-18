@@ -1,57 +1,60 @@
-import { useEffect } from "react";
 import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
-import { HOME } from "@/constants/testIds";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { Show } from "@clerk/react";
+import ClerkAuthProvider from "@/components/auth/ClerkAuthProvider";
+import { Toaster } from "@/components/ui/sonner";
+import { SupportProvider } from "@/context/SupportContext";
+import DashboardLayout from "@/components/dashboard/DashboardLayout";
+import SiteDemo from "@/pages/SiteDemo";
+import WidgetFrame from "@/pages/WidgetFrame";
+import Inbox from "@/pages/Inbox";
+import Visitors from "@/pages/Visitors";
+import Analytics from "@/pages/Analytics";
+import Team from "@/pages/Team";
+import Settings from "@/pages/Settings";
+import { SignInPage, SignUpPage } from "@/pages/AuthPages";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
-
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
-
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
+function Protected() {
   return (
-    // The marker attribute below lets the platform probe detect the stock splash — remove it with this page
-    <div data-emergent-splash>
-      <header className="App-header">
-        <a
-          data-testid={HOME.emergentLink}
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
-
-function App() {
-  return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <>
+      <Show when="signed-in"><SupportProvider><DashboardLayout /></SupportProvider></Show>
+      <Show when="signed-out"><Navigate to="/sign-in" replace /></Show>
+    </>
   );
 }
 
-export default App;
+function MainApp() {
+  return (
+    <ClerkAuthProvider>
+      <Routes>
+        <Route path="/" element={<SiteDemo />} />
+        <Route path="/products" element={<SiteDemo />} />
+        <Route path="/sample-request" element={<SiteDemo />} />
+        <Route path="/contact" element={<SiteDemo />} />
+        <Route path="/sign-in/*" element={<SignInPage />} />
+        <Route path="/sign-up/*" element={<SignUpPage />} />
+        <Route element={<Protected />}>
+          <Route path="/inbox" element={<Inbox />} />
+          <Route path="/inbox/:id" element={<Inbox />} />
+          <Route path="/visitors" element={<Visitors />} />
+          <Route path="/analytics" element={<Analytics />} />
+          <Route path="/team" element={<Team />} />
+          <Route path="/settings" element={<Settings />} />
+        </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </ClerkAuthProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/widget" element={<WidgetFrame />} />
+        <Route path="*" element={<MainApp />} />
+      </Routes>
+      <Toaster position="top-right" />
+    </BrowserRouter>
+  );
+}

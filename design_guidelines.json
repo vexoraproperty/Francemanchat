@@ -1,0 +1,627 @@
+{
+  "build_now": "Choose the smallest useful set of features from the user's scope that delivers the fastest aha moment through a complete core workflow, honoring explicit user priorities.",
+  "project_meta": {
+    "product_name": "Franceman Export Desk & Live Support Hub",
+    "organization": "Franceman Exportation LLP",
+    "industry": "Agricultural Exportation & Global Commodity Trade (Nigeria / International)",
+    "official_website": "https://francemann.com",
+    "target_commodities": [
+      "Kola Nut (MOQ 500 kg)",
+      "Bitter Kola (MOQ 300 kg)",
+      "Ginger (MOQ 1,000 kg)",
+      "Turmeric (MOQ 1,000 kg)",
+      "Hibiscus (MOQ 1,000 kg)",
+      "Sesame Seeds (MOQ 5,000 kg)",
+      "Raw Cashew Nuts (MOQ 5,000 kg)"
+    ],
+    "tawk_integration": {
+      "site_id": "67e1bc9e4b4636190c495698",
+      "api_key_env": "TAWKTO_API_KEY",
+      "architecture": "Hybrid dual-mode: embeddable website widget powered by custom Franceman branded interface synced to live agents in real-time, backed by Tawk.to JavaScript API and Webhooks for omnichannel coverage."
+    },
+    "locale_and_culture": {
+      "origin_country": "Nigeria",
+      "buyer_regions": ["Europe", "Middle East", "Asia", "North America", "South America", "Africa", "Oceania", "Caribbean"],
+      "default_currency_display": "USD ($) for export FOB/CIF quotes; NGN (₦) for domestic farmgate references",
+      "date_format": "DD/MM/YYYY (e.g. 18/11/2026)",
+      "time_format": "24h West Africa Time (WAT / UTC+1) alongside visitor local time tag",
+      "measurement_units": "Metric (kg, metric tons / MT, FCL 20ft/40ft)"
+    }
+  },
+  "user_research_and_context": {
+    "primary_actors": [
+      {
+        "actor": "International Buyer / Prospective Importer",
+        "role_context": "Corporate commodity trader, food manufacturer, or botanical importer visiting francemann.com from Europe, Asia, or North America on mobile or desktop.",
+        "trigger": "Looking for pricing, minimum order quantities (MOQ), phytosanitary certificates, sample crates (0.5kg-2kg), or shipping schedules from Apapa/Tin Can ports.",
+        "key_decisions": "Is Franceman a legitimate NEPC-registered exporter? Can they meet purity and moisture specs? How fast can a sample crate be dispatched via DHL?",
+        "desired_outcome": "Instant clarification without waiting days; receiving a verified commodity quotation and booking a DHL sample crate."
+      },
+      {
+        "actor": "Franceman Export Operations & Support Agent",
+        "role_context": "Lagos/Asaba export desk operator managing buyer inquiries, quotation requests, and active shipments.",
+        "trigger": "Incoming chat widget message, automated RFQ prompt, or live buyer browsing high-intent commodity pages (e.g., Ginger or Turmeric FOB specs).",
+        "key_decisions": "Is the buyer serious? Which commodity cluster and MOQ apply? What CIF incoterms match their destination port?",
+        "desired_outcome": "Triage buyer inquiry, provide accurate FOB/CIF estimates or sample dispatch terms within minutes, tag high-value trade leads."
+      },
+      {
+        "actor": "Export Operations Administrator",
+        "role_context": "Trade director overseeing export compliance, response SLAs, keyword rules, and agent staffing across global time zones.",
+        "trigger": "Shift handovers, daily lead conversion reviews, configuring keyword auto-replies (e.g., 'sample', 'FOB', 'phytosanitary'), and managing agent routing.",
+        "key_decisions": "Are agents responding under the target 3-minute SLA? Are international buyers getting immediate automated responses outside WAT business hours?",
+        "desired_outcome": "Flawless uptime, automated 24/7 lead capture, accurate export pipeline metrics, and integrated Tawk.to backup."
+      }
+    ],
+    "workload_and_frequency_assumptions": {
+      "inquiries_per_day": "35-80 active inquiries during peak harvest seasons (Bitter Kola, Ginger harvest cycles) - Assumption",
+      "team_size": "3 to 6 dedicated export agents + 2 trade directors - Assumption",
+      "average_handling_time": "4-8 minutes per qualification chat - Assumption",
+      "mobile_usage_share": "Over 58% of international buyers and 45% of on-the-move export agents interact via mobile browsers - Grounded in trade context and user context"
+    }
+  },
+  "visual_system": {
+    "direction_rationale": "Direction 1: 'Nigerian Botanical Export' was selected over generic modern neutral SaaS. Franceman's brand identity relies on deep Nigerian agricultural heritage, certified rigor (NEPC, ISO 22000, HACCP), and an editorial aesthetic seen on francemann.com with section indicators (§ 01, N°02). The deep forest green conveys agricultural authenticity and stability, while silver, parchment off-white, and warm amber accents reflect premium export standards.",
+    "color_palette_oklch": {
+      "brand_forest": {
+        "oklch": "oklch(0.380 0.075 162.0)",
+        "hex_equivalent": "#104e35",
+        "usage": "Primary brand color, main call-to-actions, widget header, active tab underlines, primary brand mark",
+        "srgb_verified": true
+      },
+      "brand_forest_hover": {
+        "oklch": "oklch(0.330 0.070 162.0)",
+        "hex_equivalent": "#03402a",
+        "usage": "Button hover and focused states on primary elements",
+        "srgb_verified": true
+      },
+      "brand_forest_subtle": {
+        "oklch": "oklch(0.950 0.020 162.0)",
+        "hex_equivalent": "#e3f2ea",
+        "usage": "Selected list row background, agent chat bubble, soft badges",
+        "srgb_verified": true
+      },
+      "surface_base": {
+        "oklch": "oklch(0.985 0.004 95.0)",
+        "hex_equivalent": "#fafaf7",
+        "usage": "Application canvas background, subtle warm paper tint matching francemann.com editorial feel",
+        "srgb_verified": true
+      },
+      "surface_card": {
+        "oklch": "oklch(1.000 0.000 0.0)",
+        "hex_equivalent": "#ffffff",
+        "usage": "Data panels, chat thread pane, card surfaces, modal sheets",
+        "srgb_verified": true
+      },
+      "surface_sidebar": {
+        "oklch": "oklch(0.240 0.035 162.0)",
+        "hex_equivalent": "#0e241a",
+        "usage": "Agent dashboard navigation bar and high-contrast master drawer",
+        "srgb_verified": true
+      },
+      "surface_sidebar_hover": {
+        "oklch": "oklch(0.290 0.035 162.0)",
+        "hex_equivalent": "#1a3025",
+        "usage": "Sidebar interactive item hover and active pill states",
+        "srgb_verified": true
+      },
+      "text_primary": {
+        "oklch": "oklch(0.200 0.010 150.0)",
+        "hex_equivalent": "#121713",
+        "usage": "Headings, titles, incoming buyer message body, primary table data (Contrast 18.06:1 on white - PASS AAA)",
+        "srgb_verified": true
+      },
+      "text_secondary": {
+        "oklch": "oklch(0.440 0.018 150.0)",
+        "hex_equivalent": "#4b554d",
+        "usage": "Labels, timestamps, table subtitles, metadata (Contrast 7.70:1 on white - PASS AAA)",
+        "srgb_verified": true
+      },
+      "text_muted": {
+        "oklch": "oklch(0.550 0.015 150.0)",
+        "hex_equivalent": "#6b746c",
+        "usage": "Placeholder copy, inactive tab counters, peripheral notes (Contrast 4.82:1 on white - PASS AA)",
+        "srgb_verified": true
+      },
+      "text_inverse": {
+        "oklch": "oklch(0.990 0.002 95.0)",
+        "hex_equivalent": "#fcfbfa",
+        "usage": "Text on brand forest green buttons, badges, and dark sidebar highlights",
+        "srgb_verified": true
+      },
+      "text_sidebar_primary": {
+        "oklch": "oklch(0.960 0.010 95.0)",
+        "hex_equivalent": "#f3f1ea",
+        "usage": "Navigation labels and active states in sidebar (Contrast 14.48:1 - PASS AAA)",
+        "srgb_verified": true
+      },
+      "text_sidebar_muted": {
+        "oklch": "oklch(0.750 0.018 150.0)",
+        "hex_equivalent": "#a6b1a7",
+        "usage": "Inactive links and version notes in dark sidebar (Contrast 7.36:1 - PASS AAA)",
+        "srgb_verified": true
+      },
+      "border_subtle": {
+        "oklch": "oklch(0.900 0.008 95.0)",
+        "hex_equivalent": "#dfddd8",
+        "usage": "Panel dividers, table borders, card outlines, input borders",
+        "srgb_verified": true
+      },
+      "border_sidebar": {
+        "oklch": "oklch(0.320 0.025 162.0)",
+        "hex_equivalent": "#27362e",
+        "usage": "Dividers and subtle borders in dark navigation drawer",
+        "srgb_verified": true
+      },
+      "status_online_emerald": {
+        "oklch": "oklch(0.450 0.095 155.0)",
+        "hex_equivalent": "#1d643d",
+        "usage": "Agent online indicator, visitor live badge, operational green",
+        "srgb_verified": true
+      },
+      "status_away_amber": {
+        "oklch": "oklch(0.500 0.095 75.0)",
+        "hex_equivalent": "#825a17",
+        "usage": "Away status text, pending inquiry warnings (Contrast 6.10:1 on white - PASS AA)",
+        "srgb_verified": true
+      },
+      "status_away_amber_badge": {
+        "oklch": "oklch(0.780 0.110 75.0)",
+        "hex_equivalent": "#e0ad62",
+        "usage": "Away status pill background fill",
+        "srgb_verified": true
+      },
+      "status_offline_crimson": {
+        "oklch": "oklch(0.480 0.150 25.0)",
+        "hex_equivalent": "#a12f2e",
+        "usage": "Offline state, close conversation destructive action, errors (Contrast 7.07:1 - PASS AA)",
+        "srgb_verified": true
+      },
+      "status_offline_crimson_badge": {
+        "oklch": "oklch(0.940 0.030 25.0)",
+        "hex_equivalent": "#fee3e1",
+        "usage": "Urgent alert or offline banner background",
+        "srgb_verified": true
+      },
+      "accent_silver_gradient": {
+        "gradient": "linear-gradient(135deg, #e5e7eb 0%, #cbd5e1 50%, #94a3b8 100%)",
+        "usage": "Subtle border highlight on Franceman globe emblem and brand watermark"
+      }
+    },
+    "typography": {
+      "primary_family": "Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+      "selection_rationale": "Geist provides a neutral, crisp, highly legible corporate structure with built-in tabular numbers (tnum), ideal for international export documentation, container sizes (20ft/40ft), lot weights, and precise timestamps without layout shifts.",
+      "monospace_family": "ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas, monospace",
+      "monospace_usage": "Strictly limited to machine artefacts: Tawk.to Site ID ('67e1bc9e4b4636190c495698'), Webhook HMAC tokens, API keys, and raw JSON event logs. Never used for dates, amounts, or phone numbers.",
+      "scale": {
+        "display": {
+          "size": "28px",
+          "line_height": "34px",
+          "weight": 600,
+          "tracking": "-0.015em",
+          "usage": "Hero headers, public portal headline"
+        },
+        "h1": {
+          "size": "22px",
+          "line_height": "28px",
+          "weight": 600,
+          "tracking": "-0.01em",
+          "usage": "View titles (Inbox, Live Visitors, Analytics, Settings)"
+        },
+        "h2": {
+          "size": "16px",
+          "line_height": "22px",
+          "weight": 600,
+          "tracking": "0",
+          "usage": "Section headers, visitor panel title, widget header title"
+        },
+        "h3": {
+          "size": "14px",
+          "line_height": "20px",
+          "weight": 600,
+          "tracking": "0",
+          "usage": "Card titles, subsection groupings"
+        },
+        "body_primary": {
+          "size": "14px",
+          "line_height": "20px",
+          "weight": 400,
+          "tracking": "0",
+          "usage": "Chat message bubble body, table primary row item, input values"
+        },
+        "body_emphasis": {
+          "size": "14px",
+          "line_height": "20px",
+          "weight": 500,
+          "tracking": "0",
+          "usage": "Active conversation visitor name, key metric value"
+        },
+        "caption": {
+          "size": "12px",
+          "line_height": "16px",
+          "weight": 400,
+          "tracking": "0",
+          "usage": "Timestamps, secondary metadata, offline explanation, helper text"
+        },
+        "badge_micro": {
+          "size": "11px",
+          "line_height": "14px",
+          "weight": 600,
+          "tracking": "0.02em",
+          "usage": "Section indicators (§ 01, N°03), status pills, ISO/NEPC certification tags"
+        }
+      }
+    },
+    "spacing_and_layout": {
+      "grid_base": "4px",
+      "density_standard": "Compact to medium: 8px padding on list items, 12px on cards, 16px to 20px on view containers.",
+      "border_radius": {
+        "button": "6px",
+        "card": "8px",
+        "widget_modal": "12px",
+        "pill": "9999px"
+      },
+      "shadows": {
+        "widget_float": "0 10px 25px -5px rgba(16, 78, 53, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.08)",
+        "card_elevated": "0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04)"
+      }
+    }
+  },
+  "navigation_architecture": {
+    "structure_choice": "Vertical Dark Sidebar on Desktop; Sticky Bottom Nav Bar + Slide-over Drawer on Mobile.",
+    "evaluation_and_tradeoffs": {
+      "evaluated_options": [
+        "Option A: Top Horizontal Header Bar with dropdown menus",
+        "Option B: Vertical Left Collapsible Sidebar with high-contrast Nigerian Forest tone (Chosen)"
+      ],
+      "decision_rationale": "Option B is vastly superior for Vertical Ops. Support agents monitor live incoming inquiries, status changes, and analytics metrics simultaneously. A vertical sidebar preserves full vertical height for long conversation lists (50+ chats) and allows quick 1-click jumps between Live Visitors, Inbox, Quick Answers, and Analytics without losing filter state.",
+      "mobile_adaptation": "On mobile viewports (≤ 768px), primary workflows collapse into an ergonomic bottom navigation bar with 4 persistent destinations: (1) Inbox [with unread counter pill], (2) Live Visitors, (3) Demo Site / Widget, and (4) Ops / Settings. This satisfies one-thumb operation on smartphones used by export field officers."
+    },
+    "destinations": [
+      {
+        "id": "inbox",
+        "label": "Conversations Inbox",
+        "section_tag": "§ 01",
+        "icon": "chat-bubble-left-right",
+        "badge_counter": "live_unread_count",
+        "description": "Primary split-view triage and live messaging desk"
+      },
+      {
+        "id": "live_visitors",
+        "label": "Live Visitors Radar",
+        "section_tag": "§ 02",
+        "icon": "globe-alt",
+        "badge_counter": "active_browsers_count",
+        "description": "Real-time presence tracking showing country, referral source, active page, and idle time"
+      },
+      {
+        "id": "demo_portal",
+        "label": "Franceman Website & Widget",
+        "section_tag": "§ 03",
+        "icon": "desktop-computer",
+        "description": "Live simulation of the public website (francemann.com) with the embedded floating chat widget"
+      },
+      {
+        "id": "automation_rules",
+        "label": "Automations & AI",
+        "section_tag": "§ 04",
+        "icon": "sparkles",
+        "description": "Keyword-triggered instant answers, welcome greetings, offline SLA responders, and AI assistant toggle"
+      },
+      {
+        "id": "analytics",
+        "label": "Export Ops Analytics",
+        "section_tag": "§ 05",
+        "icon": "chart-bar",
+        "description": "Response SLA benchmarks, visitor geography breakdown, agent efficiency metrics"
+      },
+      {
+        "id": "admin_settings",
+        "label": "Team & Settings",
+        "section_tag": "§ 06",
+        "icon": "cog-6-tooth",
+        "description": "Agent roles (Admin, Export Agent, Supervisor), Tawk.to API connection status, secure HMAC keys"
+      }
+    ]
+  },
+  "core_views_and_specifications": {
+    "view_1_floating_widget": {
+      "view_name": "Floating Live Chat Widget (Buyer Experience)",
+      "target_actor": "International Importer / Prospective Buyer",
+      "mobile_first_layout": {
+        "mobile_viewport": "Opens as a full-screen drawer on phones (100vw x 100dvh) with safe-area padding for iOS/Android home indicators, ensuring inputs are not obscured by virtual keyboards.",
+        "desktop_viewport": "Floats at bottom-right (right: 24px, bottom: 24px), width: 380px, height: 600px with smooth cubic-bezier open/collapse transition."
+      },
+      "pre_chat_state": {
+        "header": "Franceman Exportation LLP — Verified Export Desk (NEPC Registered)",
+        "status_chip": "Online — Typically replies in < 3 mins",
+        "welcome_copy": "Welcome to Franceman Exportation LLP. Inquire about Kola Nut, Bitter Kola, Ginger, Turmeric, or request a 500g-2kg DHL sample crate.",
+        "form_fields": [
+          {
+            "name": "full_name",
+            "label": "Full Name / Organization",
+            "placeholder": "e.g., Jean Dupont (Marseille Botanicals)",
+            "required": true
+          },
+          {
+            "name": "email",
+            "label": "Corporate Email",
+            "placeholder": "e.g., j.dupont@buyer.eu",
+            "required": true
+          },
+          {
+            "name": "commodity_interest",
+            "label": "Commodity of Interest (Optional)",
+            "type": "select",
+            "options": [
+              "Kola Nut (MOQ 500 kg)",
+              "Bitter Kola (MOQ 300 kg)",
+              "Ginger (MOQ 1,000 kg)",
+              "Turmeric (MOQ 1,000 kg)",
+              "Hibiscus (MOQ 1,000 kg)",
+              "Sesame Seeds (MOQ 5,000 kg)",
+              "Raw Cashew Nuts (MOQ 5,000 kg)",
+              "Sample Crate Request (0.5kg — 2kg)",
+              "General Trade Inquiry"
+            ]
+          }
+        ],
+        "action_button": "Start Export Conversation →"
+      },
+      "in_chat_state": {
+        "header_elements": [
+          "Franceman Globe Logo & Dark Green Brand Banner",
+          "Agent Avatar + Full Name (e.g., 'Emeka Eze - Export Operations Officer')",
+          "Agent Online Indicator (Live green pulse dot)",
+          "Editorial Badge: '§ 01 — Apapa Port Dispatch'",
+          "Action menu: 'End Chat', 'Request Callback', 'Download Transcript'"
+        ],
+        "thread_area": {
+          "visitor_bubble": "Clean off-white bubble aligned to right with subtle 1px border, dark text, micro timestamp",
+          "agent_bubble": "Forest green subtle tint (oklch 0.950 0.020 162.0) with deep forest left border bar, agent badge, timestamp",
+          "system_bubble": "Centered muted italic chip for auto-replies, e.g., 'Automated response generated based on keyword [sample]'",
+          "typing_indicator": "3-dot animated pulse labeled 'Agent is preparing FOB specs...'"
+        },
+        "quick_answer_chips": [
+          "Request 500g Sample Crate",
+          "FOB Apapa / CIF Rates",
+          "Minimum Order Quantities",
+          "Phytosanitary & NEPC Docs",
+          "WhatsApp Direct Line"
+        ],
+        "composer": {
+          "input_placeholder": "Type your export inquiry or question...",
+          "actions": [
+            "Attach specification sheet / LOI (PDF, JPG)",
+            "Send message button with arrow indicator"
+          ],
+          "disclaimer": "Export operations active 08:00 - 18:00 WAT. Inquiries outside hours receive automated dispatch."
+        }
+      },
+      "offline_state": {
+        "header_badge": "Offline — Leave a message for early dispatch",
+        "explanation": "Our Lagos trade desk is currently closed (Business hours: 08:00 - 18:00 WAT). Your message will be routed directly to our on-duty trade director. Expect formal FOB quotes within 12 hours.",
+        "guarantee_note": "Sample requests submitted outside hours are queued for DHL collection next morning."
+      }
+    },
+    "view_2_agent_inbox": {
+      "view_name": "Agent Conversation Inbox (Operations Workspace)",
+      "target_actor": "Export Support Agent / Operations Manager",
+      "layout_model": "3-Column Responsive Split Pane: (1) Conversation Directory, (2) Active Conversation Thread & Composer, (3) Visitor Deep Profile & Export Context.",
+      "column_1_conversation_directory": {
+        "top_filters": [
+          "All Chats",
+          "Active / Open",
+          "Waiting for Reply",
+          "Closed / Archived"
+        ],
+        "search_box": "Search by visitor name, company, email, country, or commodity",
+        "list_item_structure": {
+          "primary_line": "Visitor Name & Country Flag / Code (e.g., 'Marc Laurent · Marseille, FR 🇫🇷')",
+          "secondary_line": "Commodity Tag + Last Message snippet ('Inquiring on 20ft container FOB Ginger...')",
+          "meta_line": "Timestamp (e.g., '14:23 WAT'), Agent Assigned pill, Unread indicator dot"
+        }
+      },
+      "column_2_active_thread": {
+        "header_bar": {
+          "title": "Marc Laurent — Marseille Botanicals SAS",
+          "status_badge": "Active Now on /products/ginger",
+          "assigned_agent_selector": "Dropdown to reassign conversation to available agents",
+          "primary_actions": [
+            "Mark as Resolved / Close Chat",
+            "Transfer to Senior Broker",
+            "Send Formal FOB Quotation Template"
+          ]
+        },
+        "message_history": "Full chronological audit trail with date dividers, delivery timestamps, delivery checkmarks, and automated bot tags",
+        "reply_composer": {
+          "mode_toggle": "Public Reply vs. Internal Agent Note (Private yellow background note for co-agents)",
+          "quick_canned_responses": [
+            "/sample — 500g Sample dispatch terms ($48 via DHL Express, deducted from first FCL)",
+            "/fob — FOB Apapa / Tin Can Port loading timetable and BL release rhythm",
+            "/docs — NEPC, HACCP, Phyto, and Certificate of Analysis package description",
+            "/moq — Minimum order requirements across our 7 export commodities"
+          ],
+          "send_controls": "Press Enter to send (or Shift+Enter for new line), Attach file icon, Quick Canned Menu"
+        }
+      },
+      "column_3_visitor_context_panel": {
+        "drawer_behavior": "Collapsible on desktop (width: 320px); slide-up bottom sheet on mobile screens",
+        "sections": [
+          {
+            "section_title": "§ 01 — Live Session Context",
+            "items": [
+              {"label": "Current Page", "value": "francemann.com/products/ginger"},
+              {"label": "Origin Geography", "value": "Marseille, France (IP: 82.124.xx.xx)"},
+              {"label": "Referral Source", "value": "Google Search ('nigerian ginger suppliers FCL')"},
+              {"label": "Device & OS", "value": "Safari on iPhone 15 Pro (iOS 17.4)"},
+              {"label": "Session Duration", "value": "04 mins 32 secs"}
+            ]
+          },
+          {
+            "section_title": "§ 02 — Buyer Export Profile",
+            "items": [
+              {"label": "Contact Email", "value": "m.laurent@marseille-botanicals.fr"},
+              {"label": "Target Commodity", "value": "Split-Dried Ginger (Kachia / Jaba Cluster)"},
+              {"label": "Estimated Volume", "value": "1x 40ft FCL (~24 Metric Tons)"},
+              {"label": "Destination Port", "value": "Port of Marseille-Fos (CIF)"}
+            ]
+          },
+          {
+            "section_title": "§ 03 — Tawk.to Synchronization",
+            "items": [
+              {"label": "Tawk Site ID", "value": "67e1bc9e4b4636190c495698 (Linked)"},
+              {"label": "Sync Status", "value": "Real-time Webhook Active (HMAC Verified)"},
+              {"label": "Visitor Hash", "value": "SHA-256 Authenticated"}
+            ]
+          }
+        ]
+      },
+      "mobile_adaptation": "On mobile screens, Column 1 (Directory) is shown first. Tapping a conversation opens Column 2 (Active Thread) as a full-screen view with a back button. Column 3 (Visitor Context) is accessible via a top-right 'Info' icon that opens a modal drawer."
+    },
+    "view_3_live_visitors_radar": {
+      "view_name": "Live Visitors Monitoring Radar",
+      "target_actor": "Export Operations Officer / Trade Broker",
+      "description": "Real-time live presence grid enabling agents to monitor prospective buyers currently browsing commodities and proactively invite them to chat.",
+      "summary_cards": [
+        {"label": "Active Visitors Now", "value": "14", "detail": "Across 6 countries"},
+        {"label": "Browsing Product Specs", "value": "9", "detail": "High commercial intent"},
+        {"label": "In Active Live Chat", "value": "3", "detail": "Being handled by agents"},
+        {"label": "Average Time on Site", "value": "3m 48s", "detail": "Top: Bitter Kola spec page"}
+      ],
+      "table_columns": [
+        {"name": "Visitor / Company", "width": "25%"},
+        {"name": "Location & Flag", "width": "18%"},
+        {"name": "Current Page & Action", "width": "25%"},
+        {"name": "Typing / Status", "width": "16%"},
+        {"name": "Action", "width": "16%"}
+      ],
+      "sample_rows": [
+        {
+          "visitor": "Guest #4812 (Hamburg, DE)",
+          "location": "Germany 🇩🇪 (Hamburg)",
+          "current_page": "/products/bitter-kola (Viewing MOQ specs)",
+          "typing_status": "Idle (2m 14s)",
+          "quick_action": "Proactive Chat Invite"
+        },
+        {
+          "visitor": "Jean-Luc (Antwerp, BE)",
+          "location": "Belgium 🇧🇪 (Antwerp)",
+          "current_page": "/sample-request",
+          "typing_status": "Typing in widget...",
+          "quick_action": "View Conversation"
+        },
+        {
+          "visitor": "Al-Mansoor Trading (Dubai, AE)",
+          "location": "United Arab Emirates 🇦🇪",
+          "current_page": "/products/sesame-seeds",
+          "typing_status": "Reading CoA Specs",
+          "quick_action": "Proactive Chat Invite"
+        }
+      ]
+    },
+    "view_4_automation_and_ai": {
+      "view_name": "Automations, Keyword Answers & AI Assistant",
+      "target_actor": "Trade Director / Support Administrator",
+      "features": [
+        {
+          "title": "Welcome Greeting Rules",
+          "description": "Triggers customized welcome messages based on visitor landing page (e.g. customized greeting for /products/turmeric vs /sample-request)."
+        },
+        {
+          "title": "Offline SLA Responders",
+          "description": "Controls automatic dispatch notices when inquiries arrive outside WAT business hours (18:00 - 08:00 WAT) with promise of 1-business-day response."
+        },
+        {
+          "title": "Keyword-Based Instant Answers",
+          "rules": [
+            {
+              "trigger_keywords": ["sample", "crate", "test", "dhl", "trial"],
+              "response_payload": "We supply 500g — 2kg sample crates via DHL Express within 48 hours of confirmation. Every crate includes third-party laboratory Certificate of Analysis (CoA) and botanical origin trace record."
+            },
+            {
+              "trigger_keywords": ["moq", "minimum", "quantity", "order size"],
+              "response_payload": "Our export MOQs: Kola Nut (500 kg), Bitter Kola (300 kg), Ginger (1,000 kg / 1 MT), Turmeric (1,000 kg), Hibiscus (1,000 kg), Sesame Seeds (5,000 kg / 5 MT), Raw Cashew Nuts (5,000 kg)."
+            },
+            {
+              "trigger_keywords": ["incoterms", "fob", "cif", "port", "apapa"],
+              "response_payload": "We ship FOB Apapa or Tin Can Island Ports (Lagos), or CIF destination port worldwide. Bills of Lading and phytosanitary documents are released within 24 hours of vessel departure."
+            },
+            {
+              "trigger_keywords": ["cert", "nepc", "phytosanitary", "nafdac", "iso"],
+              "response_payload": "Franceman holds active NEPC Export Registration, ISO 22000 Food Safety certification, HACCP Compliance, and issues federal Phytosanitary Certificates for every European, Asian, and American cargo."
+            }
+          ]
+        },
+        {
+          "title": "AI Export Commodity Assistant",
+          "toggle_state": "Enabled with Guardrails",
+          "system_instructions": "Specialized in Nigerian agricultural export commodities. Strictly adheres to Franceman quality specs, FOB/CIF incoterms, and never quotes binding spot rates without trade broker sign-off."
+        }
+      ]
+    },
+    "view_5_export_analytics": {
+      "view_name": "Support & Export Performance Analytics",
+      "target_actor": "Trade Operations Director",
+      "metrics": [
+        {"metric": "Median First Response Time", "value": "1m 42s", "target": "< 3m", "status": "Optimal"},
+        {"metric": "Inquiries Qualified to RFQ", "value": "68.4%", "target": "> 50%", "status": "Above Target"},
+        {"metric": "Sample Crates Dispatched", "value": "24 crates", "period": "This Month", "trend": "+18%"},
+        {"metric": "Top Inquired Commodity", "value": "Ginger (Kachia)", "percentage": "34% of volume"}
+      ],
+      "geo_distribution": [
+        {"region": "Europe (Rotterdam, Marseille, Hamburg)", "share": "42%"},
+        {"region": "Middle East (Jebel Ali, Dammam)", "share": "24%"},
+        {"region": "Asia (Nhava Sheva, Qingdao)", "share": "18%"},
+        {"region": "Americas & Others", "share": "16%"}
+      ]
+    },
+    "view_6_admin_and_tawk_settings": {
+      "view_name": "Team Roles, Security & Tawk.to Integration Desk",
+      "target_actor": "System Administrator",
+      "team_management": {
+        "roles": ["Trade Director (Admin)", "Senior Export Broker", "Live Chat Agent"],
+        "fields": ["Agent Name", "Corporate Email", "Status (Online/Away/Offline)", "Assigned Commodities", "Role Badge"]
+      },
+      "tawkto_configuration": {
+        "site_id": "67e1bc9e4b4636190c495698",
+        "api_key_status": "Configured via TAWKTO_API_KEY environment variable",
+        "webhook_endpoint": "https://api.francemann.com/api/webhooks/tawkto",
+        "hmac_sha1_verification": "Enabled & Monitored",
+        "widget_embed_mode": "Custom Styled Franceman Widget with Tawk.to JavaScript API bridge"
+      }
+    }
+  },
+  "states_and_feedback": {
+    "loading_states": {
+      "thread_skeleton": "Subtle shimmering rectangular skeletons matching message bubble heights (36px, 52px) with 0% layout shift.",
+      "visitor_table_skeleton": "Row skeletons with fixed cell heights to eliminate content reflow."
+    },
+    "empty_states": {
+      "inbox_empty": {
+        "title": "All buyer inquiries resolved",
+        "body": "No open inquiries waiting in the triage queue. Incoming chats will alert with sound and visual badges.",
+        "action": "View Live Visitors Radar →"
+      },
+      "live_visitors_empty": {
+        "title": "Radar listening for visitors",
+        "body": "No active sessions on francemann.com at this second. High-intent traffic peaks between 09:00 - 17:00 UTC."
+      }
+    },
+    "validation_and_errors": {
+      "chat_name_email_required": "Display inline red badge under input: 'Please enter a valid corporate email for quotation delivery'.",
+      "connection_loss": "Top persistent banner: 'Connection paused. Re-establishing secure link to Lagos trade desk...' with automatic exponential backoff retry."
+    }
+  },
+  "motion_and_microinteractions": {
+    "principles": "Deliberate, swift, non-decorative. Respects prefers-reduced-motion: reduce.",
+    "widget_toggle": "180ms ease-out translateY(8px) -> translateY(0) with opacity fade.",
+    "status_pulse": "Slow 3s opacity ease (0.6 -> 1.0) on green status dot indicating real-time socket vitality.",
+    "message_delivery": "Instantaneous bubble insertion with 60ms ease-out for scroll container positioning."
+  },
+  "accessibility_and_compliance": {
+    "wcag_level": "WCAG 2.1 Level AA Compliant throughout",
+    "text_contrast_guarantee": "All primary and secondary text pairs exceed 4.5:1 ratio (primary text 18.06:1 on white, secondary text 7.70:1 on white).",
+    "keyboard_navigation": "Full tab order across chat input, send buttons, quick answer chips, and navigation links with visible 2px oklch(0.380 0.075 162.0) focus ring.",
+    "screen_readers": "Aria-live='polite' region for new incoming agent messages and aria-status for typing announcements."
+  }
+}
