@@ -3,6 +3,7 @@ import json
 import logging
 import os
 import ipaddress
+import time
 from pathlib import Path
 from contextlib import suppress
 from datetime import datetime, timedelta, timezone
@@ -83,13 +84,15 @@ def _parse_device(ua: str) -> str:
                                    ("mac os", "macOS"), ("linux", "Linux")] if k in ua_l), "Unknown OS")
     browser = next((n for k, n in [("edg/", "Edge"), ("opr/", "Opera"), ("chrome/", "Chrome"), ("firefox/", "Firefox"),
                                    ("safari/", "Safari")] if k in ua_l), "Browser")
-    return f"{browser} on {os_name}"
+    kind = "Tablet" if "ipad" in ua_l or "tablet" in ua_l else "Mobile" if "mobi" in ua_l or "iphone" in ua_l or "android" in ua_l else "Desktop"
+    return f"{browser} on {os_name} · {kind}"
 
 
 def visitor_public(v: dict) -> dict:
     return {**{k: v.get(k) for k in ("id", "name", "email", "country", "country_code", "city", "region", "timezone",
                                       "current_page", "page_title", "referrer", "device", "pages_viewed", "page_history",
-                                      "created_at", "last_seen", "identified", "commodity")},
+                                      "created_at", "last_seen", "identified", "commodity", "ip", "session_started",
+                                      "visits")},
             "online": hub.visitor_online(v["id"]), "typing": hub.typing.get(v["id"], "")}
 
 
@@ -248,8 +251,11 @@ async def widget_identify(body: IdentifyIn, visitor: dict = Depends(visitor_from
     await db.visitors.update_one({"id": visitor["id"]}, {"$set": {
         "name": body.name.strip(), "email": body.email.lower(), "commodity": body.commodity.strip(), "identified": True}})
     visitor = await db.visitors.find_one({"id": visitor["id"]}, P0)
-    conv = await open_conversation(visitor["id"]) or await create_conversation(visitor)
+    existing = await open_conversation(visitor["id"])
+    conv = existing or await create_conversation(visitor)
     await hub.to_agents({"type": "visitor_update", "visitor": visitor_public(visitor)})
+    if not existing:
+        await activity(visitor, "chat_started", conversation_id=conv["id"])
     return {"visitor": visitor_public(visitor), "conversation": conv, "messages": await conv_messages(conv["id"])}
 
 
@@ -295,9 +301,15 @@ async def ws_visitor(ws: WebSocket, token: str = Query(...)):
         await ws.close(code=4404)
         return
     await ws.accept()
+    arriving = not hub.visitors.get(vid) and (time.time() - hub.last_left.get(vid, 0)) > 15
     hub.visitors[vid].add(ws)
-    await db.visitors.update_one({"id": vid}, {"$set": {"last_seen": now_iso()}})
+    sets = {"last_seen": now_iso()}
+    if arriving:
+        sets["session_started"] = now_iso()
+    await db.visitors.update_one({"id": vid}, {"$set": sets, **({"$inc": {"visits": 1}} if arriving else {})})
     await push_visitor(vid)
+    if arriving:
+        await activity(await db.visitors.find_one({"id": vid}, P0), "arrived")
     await ws.send_text(json.dumps({"type": "presence", "agents_online": hub.agents_online()}))
     try:
         while True:
@@ -310,6 +322,7 @@ async def ws_visitor(ws: WebSocket, token: str = Query(...)):
                     "$inc": {"pages_viewed": 1},
                     "$push": {"page_history": {"$each": [{"url": url, "title": title, "at": now_iso()}], "$slice": -15}}})
                 await push_visitor(vid)
+                await activity(await db.visitors.find_one({"id": vid}, P0), "page", url=url, title=title)
             elif kind == "typing":
                 text = str(data.get("text", ""))[:500]
                 if text:
@@ -328,8 +341,23 @@ async def ws_visitor(ws: WebSocket, token: str = Query(...)):
         if not hub.visitors[vid]:
             hub.visitors.pop(vid, None)
             hub.typing.pop(vid, None)
+            hub.last_left[vid] = time.time()
             await db.visitors.update_one({"id": vid}, {"$set": {"last_seen": now_iso()}})
             await push_visitor(vid)
+            asyncio.create_task(announce_left(vid))
+
+
+async def announce_left(vid: str):
+    await asyncio.sleep(15)
+    if not hub.visitor_online(vid):
+        v = await db.visitors.find_one({"id": vid}, P0)
+        if v:
+            await activity(v, "left")
+
+
+async def activity(v: dict, action: str, **extra):
+    await hub.to_agents({"type": "visitor_activity", "action": action, "at": now_iso(),
+                         "visitor": visitor_public(v), **extra})
 
 
 async def push_visitor(vid: str):

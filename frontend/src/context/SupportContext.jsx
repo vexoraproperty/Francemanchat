@@ -1,6 +1,9 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useAuth } from "@clerk/react";
+import { useNavigate } from "react-router-dom";
 import { useApi, errMsg, WS_BASE } from "@/lib/api";
+import { useNotifications } from "@/lib/notify";
+import { pathOf } from "@/lib/format";
 
 const SupportContext = createContext(null);
 export const useSupport = () => useContext(SupportContext);
@@ -43,7 +46,11 @@ export function SupportProvider({ children }) {
   const [onlineAgentIds, setOnlineAgentIds] = useState([]);
   const [visitorTyping, setVisitorTyping] = useState({});
   const [agentTyping, setAgentTyping] = useState({});
+  const [activity, setActivity] = useState([]);
   const listeners = useRef(new Set());
+  const navigate = useNavigate();
+  const notifications = useNotifications(navigate);
+  const { notify } = notifications;
 
   const refreshMe = useCallback(async () => {
     try { setMe(await api("get", "/me")); setError(null); } catch (e) { setError(errMsg(e)); }
@@ -56,15 +63,26 @@ export function SupportProvider({ children }) {
     if (d.type === "message" && d.message.sender_type === "visitor") setVisitorTyping((s) => ({ ...s, [d.message.visitor_id]: "" }));
     if (d.type === "visitor_update" && !d.visitor.online) setVisitorTyping((s) => ({ ...s, [d.visitor.id]: "" }));
     if (d.type === "agent_typing") setAgentTyping((s) => ({ ...s, [d.conversation_id]: d.typing ? { name: d.name, agent_id: d.agent_id } : null }));
+    if (d.type === "visitor_activity") {
+      setActivity((l) => [{ id: `${d.at}-${d.visitor.id}-${d.action}`, ...d }, ...l].slice(0, 80));
+      const v = d.visitor;
+      const where = [v.city, v.country].filter(Boolean).join(", ") || "unknown location";
+      if (d.action === "arrived") notify({ kind: "visitor", title: "New visitor on your website", body: `${v.name} from ${where} · ${pathOf(v.current_page)}`, link: "/visitors", tag: v.id });
+      if (d.action === "chat_started") notify({ kind: "chat", title: "New chat started", body: `${v.name} (${v.email}) from ${where}`, link: `/inbox/${d.conversation_id}`, tag: d.conversation_id });
+    }
+    if (d.type === "message" && d.message.sender_type === "visitor") {
+      const viewing = window.location.pathname === `/inbox/${d.message.conversation_id}` && !document.hidden;
+      if (!viewing) notify({ kind: "message", title: `New message from ${d.message.sender_name}`, body: d.message.text.slice(0, 120), link: `/inbox/${d.message.conversation_id}`, tag: d.message.conversation_id });
+    }
     listeners.current.forEach((fn) => fn(d));
-  }, []);
+  }, [notify]);
 
   const staff = !!me && ["admin", "agent"].includes(me.role);
   const { connected, send } = useAgentSocket(staff, onEvent);
   const subscribe = useCallback((fn) => { listeners.current.add(fn); return () => listeners.current.delete(fn); }, []);
 
   const value = { api, me, setMe, error, refreshMe, staff, isAdmin: me?.role === "admin", connected, send, subscribe,
-    onlineAgentIds, visitorTyping, agentTyping };
+    onlineAgentIds, visitorTyping, agentTyping, activity, notifications };
   return <SupportContext.Provider value={value}>{children}</SupportContext.Provider>;
 }
 

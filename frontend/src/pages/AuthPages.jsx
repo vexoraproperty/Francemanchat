@@ -36,7 +36,7 @@ export const SignInPage = () => (
   </Shell>
 );
 export const SignUpPage = () => (
-  <Shell title="Join the support desk" sub="An administrator approves new accounts before they can see conversations.">
+  <Shell title="Join the support desk" sub="Create your agent account and start replying to customers right away.">
     <SignUp routing="path" path="/sign-up" signInUrl="/sign-in" />
   </Shell>
 );

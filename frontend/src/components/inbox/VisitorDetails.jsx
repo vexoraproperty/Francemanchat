@@ -32,12 +32,13 @@ export function VisitorDetails({ detail, agents, me, onAssign, typing }) {
       </Section>
       <Section tag="02" title="Location & device">
         <Row label="Location" testid="visitor-detail-country">{locationLabel(v)}{v.country_code ? ` (${v.country_code})` : ""}</Row>
+        <Row label="IP address" testid="visitor-detail-ip">{v.ip}</Row>
         <Row label="Local time">{localTime(v.timezone) ? `${localTime(v.timezone)} · ${v.timezone}` : ""}</Row>
         <Row label="Device">{v.device}</Row>
       </Section>
       <Section tag="03" title="On the website">
         <Row label="Current page" testid="visitor-detail-current-page">{v.current_page ? <a href={v.current_page} target="_blank" rel="noreferrer" className="text-[#104e35] hover:underline">{v.page_title || pathOf(v.current_page)}</a> : ""}</Row>
-        <Row label="Pages viewed">{String(v.pages_viewed ?? 0)}</Row>
+        <Row label="Pages viewed">{`${v.pages_viewed ?? 0} · ${v.visits || 1} visit(s)`}</Row>
         <Row label="Referrer">{v.referrer ? pathOf(v.referrer) : "Direct"}</Row>
         {v.page_history?.length > 0 && (
           <ol className="mt-2 space-y-1.5 border-l border-[#dfddd8] pl-3" data-testid="visitor-page-history">

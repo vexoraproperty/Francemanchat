@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/dashboard/DashboardLayout";
 import { useSupport, useSupportEvents } from "@/context/SupportContext";
 import { errMsg } from "@/lib/api";
-import { ago, initials, localTime, locationLabel, pathOf } from "@/lib/format";
+import { ago, fmtDuration, fmtTime, initials, localTime, locationLabel, pathOf } from "@/lib/format";
 
 const Stat = ({ label, value, detail, testid }) => (
   <div className="rounded-lg border border-[#dfddd8] bg-white p-4">
@@ -20,7 +20,7 @@ function TypingCell({ v, typing }) {
 }
 
 export default function Visitors() {
-  const { api, visitorTyping } = useSupport();
+  const { api, visitorTyping, activity } = useSupport();
   const [visitors, setVisitors] = useState([]);
   const [showAll, setShowAll] = useState(false);
   const [, tick] = useState(0);
@@ -63,14 +63,15 @@ export default function Visitors() {
           <Stat label="Typing" value={typingCount} testid="stat-visitors-typing" />
           <Stat label="Countries" value={countries.size} detail={[...countries].slice(0, 3).join(", ")} testid="stat-visitors-countries" />
         </div>
+        <div className="grid gap-6 2xl:grid-cols-[1fr_340px]">
         <div className="overflow-x-auto rounded-lg border border-[#dfddd8] bg-white">
-          <table className="w-full min-w-[820px] text-left text-sm" data-testid="visitors-table">
+          <table className="w-full min-w-[980px] text-left text-sm" data-testid="visitors-table">
             <thead className="border-b border-[#dfddd8] bg-[#fafaf7] text-[11px] uppercase tracking-wider text-[#6b746c]">
-              <tr><th className="px-4 py-3 font-semibold">Visitor</th><th className="px-4 py-3 font-semibold">Location</th><th className="px-4 py-3 font-semibold">Current page</th><th className="px-4 py-3 font-semibold">Activity</th><th className="px-4 py-3 font-semibold">Pages</th><th className="px-4 py-3" /></tr>
+              <tr><th className="px-4 py-3 font-semibold">Visitor</th><th className="px-4 py-3 font-semibold">Country</th><th className="px-4 py-3 font-semibold">IP / Device</th><th className="px-4 py-3 font-semibold">Current page</th><th className="px-4 py-3 font-semibold">Activity</th><th className="px-4 py-3 font-semibold">On site</th><th className="px-4 py-3" /></tr>
             </thead>
             <tbody>
               {list.length === 0 && (
-                <tr><td colSpan={6} className="px-4 py-12 text-center text-sm text-[#6b746c]" data-testid="visitors-empty">No visitors {showAll ? "in the last 24 hours" : "online right now"}. Open the website in another tab to see yourself appear.</td></tr>
+                <tr><td colSpan={7} className="px-4 py-12 text-center text-sm text-[#6b746c]" data-testid="visitors-empty">No visitors {showAll ? "in the last 24 hours" : "online right now"}. Install the widget code on your website, or open the direct chat link, to see visitors appear here live.</td></tr>
               )}
               {list.map((v) => (
                 <tr key={v.id} className="border-b border-[#efede8] last:border-0" data-testid={`visitor-row-${v.id}`}>
@@ -82,10 +83,11 @@ export default function Visitors() {
                     </div>
                   </td>
                   <td className="px-4 py-3"><div className="flex items-center gap-2">{v.country_code && <span className="rounded bg-[#f1f0ec] px-1 text-[10px] font-semibold text-[#4b554d]">{v.country_code}</span>}<span>{locationLabel(v)}</span></div>
-                    <div className="text-xs text-[#6b746c]">{localTime(v.timezone) && `Local ${localTime(v.timezone)}`} · {v.device}</div></td>
+                    <div className="text-xs text-[#6b746c]">{localTime(v.timezone) && `Local time ${localTime(v.timezone)}`}</div></td>
+                  <td className="px-4 py-3"><div className="font-mono text-xs" data-testid={`visitor-ip-${v.id}`}>{v.ip || "—"}</div><div className="text-xs text-[#6b746c]">{v.device}</div></td>
                   <td className="px-4 py-3"><div className="max-w-[240px] truncate">{v.page_title || "—"}</div><div className="max-w-[240px] truncate text-xs text-[#6b746c]">{pathOf(v.current_page)}</div></td>
                   <td className="px-4 py-3"><TypingCell v={v} typing={v.online && visitorTyping[v.id]} /></td>
-                  <td className="px-4 py-3 text-[#4b554d]">{v.pages_viewed || 0}</td>
+                  <td className="px-4 py-3 text-xs text-[#4b554d]"><div>{v.online && v.session_started ? fmtDuration((Date.now() - new Date(v.session_started).getTime()) / 1000) : "—"}</div><div className="text-[#6b746c]">{v.pages_viewed || 0} pages · {v.visits || 1} visits</div></td>
                   <td className="px-4 py-3 text-right">{v.conversation_id && (
                     <Link to={`/inbox/${v.conversation_id}`} className="rounded-md border border-[#104e35] px-3 py-1.5 text-xs font-medium text-[#104e35] hover:bg-[#104e35] hover:text-white" data-testid={`visitor-open-chat-${v.id}`}>Open chat</Link>)}</td>
                 </tr>
@@ -93,7 +95,31 @@ export default function Visitors() {
             </tbody>
           </table>
         </div>
+        <ActivityFeed items={activity} />
+        </div>
       </div>
     </div>
+  );
+}
+
+const ACTION = { arrived: "arrived on", page: "is viewing", left: "left the website", chat_started: "started a chat" };
+
+function ActivityFeed({ items }) {
+  return (
+    <section className="rounded-lg border border-[#dfddd8] bg-white" data-testid="activity-feed">
+      <div className="flex items-center gap-2 border-b border-[#efede8] px-4 py-3">
+        <span className="h-2 w-2 rounded-full bg-[#22a861]" /><h2 className="font-display text-lg font-semibold text-[#104e35]">Live activity</h2>
+      </div>
+      <div className="max-h-[560px] overflow-y-auto fm-scroll">
+        {items.length === 0 ? <p className="p-6 text-center text-xs text-[#6b746c]">Visitor arrivals, page views and new chats stream here as they happen.</p> : items.map((a) => (
+          <div key={a.id} className="border-b border-[#f3f1ec] px-4 py-2.5 text-xs" data-testid="activity-item">
+            <span className="font-medium">{a.visitor.name}</span>{a.visitor.country_code && <span className="ml-1 rounded bg-[#f1f0ec] px-1 text-[10px] font-semibold text-[#4b554d]">{a.visitor.country_code}</span>}{" "}
+            <span className="text-[#4b554d]">{ACTION[a.action]}</span>{" "}
+            {(a.action === "page" || a.action === "arrived") && <span className="text-[#104e35]">{a.title || pathOf(a.url || a.visitor.current_page)}</span>}
+            <div className="mt-0.5 text-[10px] text-[#6b746c]">{fmtTime(a.at)} · {locationLabel(a.visitor)}</div>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }

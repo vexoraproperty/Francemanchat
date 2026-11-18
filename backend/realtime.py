@@ -13,6 +13,7 @@ class Hub:
         self.visitors: dict[str, set[WebSocket]] = defaultdict(set)
         self.agent_status: dict[str, str] = {}
         self.typing: dict[str, str] = {}
+        self.last_left: dict[str, float] = {}
 
     async def _send(self, sockets, payload: dict):
         text = json.dumps(payload, default=str)

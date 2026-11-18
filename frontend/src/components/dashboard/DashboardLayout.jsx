@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { LogoMark, Wordmark } from "@/components/Brand";
 import { useSupport } from "@/context/SupportContext";
 import { errMsg } from "@/lib/api";
+import { NotificationBell } from "@/components/dashboard/NotificationBell";
 
 const NAV = [
   { to: "/overview", label: "Overview", icon: LayoutDashboard, tag: "00" },
@@ -48,7 +49,7 @@ function Sidebar({ items }) {
           </NavLink>
         ))}
       </nav>
-      <div className="flex items-center justify-between border-t border-[#27362e] p-4"><StatusToggle /><UserButton /></div>
+      <div className="flex items-center justify-between border-t border-[#27362e] p-4"><StatusToggle /><div className="flex items-center gap-2"><NotificationBell /><UserButton /></div></div>
     </aside>
   );
 }
@@ -71,8 +72,8 @@ function Pending({ me }) {
     <div className="flex min-h-screen items-center justify-center bg-[#fafaf7] p-6" data-testid="pending-access">
       <div className="max-w-md rounded-lg border border-[#dfddd8] bg-white p-8 text-center">
         <ShieldAlert className="mx-auto h-8 w-8 text-[#825a17]" />
-        <h1 className="mt-4 text-xl font-semibold">Awaiting approval</h1>
-        <p className="mt-2 text-sm text-[#4b554d]">You are signed in as {me?.email}. An administrator needs to approve your account as a support agent before you can access conversations.</p>
+        <h1 className="mt-4 text-xl font-semibold">Access removed</h1>
+        <p className="mt-2 text-sm text-[#4b554d]">You are signed in as {me?.email}. An administrator has removed your access to the support desk.</p>
         <div className="mt-6 flex justify-center gap-3"><UserButton /></div>
       </div>
     </div>
@@ -91,7 +92,7 @@ export default function DashboardLayout() {
       <div className="flex min-w-0 flex-1 flex-col">
         <div className="flex items-center justify-between border-b border-[#27362e] bg-[#0e241a] px-4 py-3 md:hidden">
           <div className="flex items-center gap-2.5"><LogoMark size={28} /><Wordmark inverse sub="Support desk" /></div>
-          <div className="flex items-center gap-3"><StatusToggle /><UserButton /></div>
+          <div className="flex items-center gap-2"><StatusToggle /><NotificationBell /><UserButton /></div>
         </div>
         <main className="min-h-0 flex-1 overflow-hidden pb-[60px] md:pb-0"><Outlet /></main>
       </div>

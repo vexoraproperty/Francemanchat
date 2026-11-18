@@ -6,7 +6,7 @@ import { useSupport } from "@/context/SupportContext";
 import { errMsg } from "@/lib/api";
 import { fmtDateTime, initials } from "@/lib/format";
 
-const ROLE_LABEL = { admin: "Administrator", agent: "Support agent", pending: "Pending approval" };
+const ROLE_LABEL = { admin: "Administrator", agent: "Support agent", pending: "No access" };
 
 export default function Team() {
   const { api, me } = useSupport();
@@ -18,16 +18,14 @@ export default function Team() {
     try { await api("patch", `/users/${uid}/role`, { role }); toast.success("Role updated"); load(); }
     catch (e) { toast.error(errMsg(e)); }
   };
-  const pending = data.users.filter((u) => u.role === "pending").length;
 
   return (
     <div className="h-full overflow-y-auto fm-scroll" data-testid="team-page">
-      <PageHeader tag="06 — Administration" title="Team & roles" desc="Approve new agents and decide who can administer the support desk." />
+      <PageHeader tag="06 — Administration" title="Team & roles" desc="Manage your support agents and administrators." />
       <div className="space-y-6 p-5 md:p-8">
         <div className="rounded-lg border border-[#dfddd8] bg-white p-5 text-sm text-[#4b554d]">
-          To add an agent, ask them to create an account at <span className="font-medium text-[#121713]">{window.location.origin}/sign-up</span> with email and password or Google.
-          They appear below as <span className="font-medium">Pending approval</span> and cannot see any conversation until you give them a role.
-          {pending > 0 && <span className="ml-1 font-medium text-[#825a17]" data-testid="team-pending-count">{pending} waiting for approval.</span>}
+          To add an agent, share <span className="font-medium text-[#121713]">{window.location.origin}/sign-up</span>. Anyone who signs up with email and password or Google becomes a support agent straight away.
+          You can promote agents to Administrator, or set someone to <span className="font-medium">No access</span> to remove their access.
         </div>
         <div className="overflow-x-auto rounded-lg border border-[#dfddd8] bg-white">
           <table className="w-full min-w-[640px] text-left text-sm" data-testid="team-table">

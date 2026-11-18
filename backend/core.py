@@ -24,7 +24,7 @@ client = AsyncIOMotorClient(os.environ["MONGO_URL"])
 db = client[os.environ["DB_NAME"]]
 
 ROLES = ["admin", "agent", "pending"]
-DEFAULT_ROLE = "pending"
+DEFAULT_ROLE = "agent"
 STAFF_ROLES = ("admin", "agent")
 RETIRED_ROLES = {}
 RANK = {r: len(ROLES) - i for i, r in enumerate(ROLES)}
