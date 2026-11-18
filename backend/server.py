@@ -3,13 +3,15 @@ import json
 import logging
 import os
 import ipaddress
+from pathlib import Path
 from contextlib import suppress
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 import requests
 from fastapi import APIRouter, Depends, FastAPI, Header, HTTPException, Query, Request, WebSocket, WebSocketDisconnect
-from pydantic import BaseModel, EmailStr, Field
+from fastapi.responses import FileResponse
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from pymongo import ASCENDING, DESCENDING, IndexModel
 from starlette.concurrency import run_in_threadpool
 from starlette.middleware.cors import CORSMiddleware
@@ -196,9 +198,22 @@ class IdentifyIn(BaseModel):
     email: EmailStr
     commodity: str = Field(default="", max_length=120)
 
+    @field_validator("name")
+    @classmethod
+    def name_not_blank(cls, v: str) -> str:
+        if not v.strip():
+            raise ValueError("Name is required")
+        return v.strip()
+
 
 class TextIn(BaseModel):
     text: str = Field(min_length=1, max_length=4000)
+
+
+@api.get("/embed.js")
+async def embed_js():
+    return FileResponse(Path(__file__).parent / "static" / "embed.js", media_type="application/javascript",
+                        headers={"Cross-Origin-Resource-Policy": "cross-origin", "Cache-Control": "public, max-age=300"})
 
 
 @api.get("/widget/config")
@@ -437,7 +452,10 @@ async def get_conversation(conv_id: str, member: dict = Depends(require_staff)):
 @api.post("/conversations/{conv_id}/messages")
 async def agent_send(conv_id: str, body: TextIn, member: dict = Depends(require_staff)):
     conv = await get_conv_or_404(conv_id)
-    sets = {"agent_replied": True, "status": "open"}
+    sets = {"agent_replied": True, "status": "open", "closed_at": None}
+    if conv["status"] == "closed":
+        await db.conversations.update_one({"id": conv_id}, {"$set": {"status": "open", "closed_at": None}})
+        await insert_message(conv, "system", "Chat reopened", kind="reopen")
     if not conv.get("first_response_at"):
         sets["first_response_at"] = now_iso()
     if not conv.get("assigned_agent_id"):
@@ -494,7 +512,7 @@ async def list_visitors(member: dict = Depends(require_staff), hours: int = Quer
                                         {"_id": 0, "id": 1, "visitor_id": 1}).to_list(500)
     cmap = {c["visitor_id"]: c["id"] for c in convs}
     out = [{**visitor_public(d), "conversation_id": cmap.get(d["id"])} for d in docs]
-    return sorted(out, key=lambda v: (not v["online"], v["last_seen"] and -datetime.fromisoformat(v["last_seen"]).timestamp()))
+    return sorted(out, key=lambda v: (not v["online"], -(datetime.fromisoformat(v["last_seen"]).timestamp() if v.get("last_seen") else 0)))
 
 
 # ---------- admin ----------

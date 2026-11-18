@@ -68,13 +68,14 @@ export function useVisitorChat(initialPage) {
         if (stopped) return;
         if (ev.code === 4401 || ev.code === 4404) {
           localStorage.removeItem(TOKEN_KEY);
+          start();
           return;
         }
         timer = setTimeout(connect, Math.min(15000, 1000 * 2 ** retry++));
         retry = Math.max(retry, 1);
       };
     };
-    (async () => {
+    const start = async () => {
       try {
         const page = pageRef.current || { url: window.location.href, title: document.title, referrer: document.referrer };
         const { data } = await axios.post(`${API}/widget/session`, { token: localStorage.getItem(TOKEN_KEY), ...page });
@@ -87,7 +88,8 @@ export function useVisitorChat(initialPage) {
       } catch {
         setChat((s) => ({ ...s, ready: true, error: "Chat is temporarily unavailable." }));
       }
-    })();
+    };
+    start();
     const ping = setInterval(() => wsRef.current?.readyState === 1 && wsRef.current.send('{"type":"ping"}'), 25000);
     return () => {
       stopped = true;

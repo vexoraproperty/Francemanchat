@@ -12,7 +12,7 @@ export function PreChatForm({ welcome, offline, onSubmit }) {
   const [form, setForm] = useState({ name: "", email: "", commodity: "" });
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const set = (k) => (e) => setForm({ ...form, [k]: e.target.value });
+  const set = (k) => (e) => { setForm({ ...form, [k]: e.target.value }); setError(""); };
 
   const submit = async (e) => {
     e.preventDefault();
@@ -30,7 +30,7 @@ export function PreChatForm({ welcome, offline, onSubmit }) {
   };
 
   return (
-    <form onSubmit={submit} className="flex flex-1 flex-col gap-4 overflow-y-auto p-5 fm-scroll" data-testid="prechat-form">
+    <form noValidate onSubmit={submit} className="flex flex-1 flex-col gap-4 overflow-y-auto p-5 fm-scroll" data-testid="prechat-form">
       <div className="rounded-md border-l-2 border-[#104e35] bg-[#e3f2ea] px-3.5 py-3 text-sm leading-5 text-[#121713]" data-testid="prechat-welcome">
         {offline || welcome}
       </div>

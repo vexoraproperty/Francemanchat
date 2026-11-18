@@ -12,7 +12,7 @@
   var last = "";
   function sendPage() {
     if (!frame.contentWindow) return;
-    frame.contentWindow.postMessage({ type: "fm:page", url: location.href, title: document.title, referrer: document.referrer }, origin);
+    frame.contentWindow.postMessage({ type: "fm:page", url: location.href, title: document.title, referrer: document.referrer, mobile: window.innerWidth < 640 }, origin);
   }
   setInterval(function () {
     if (location.href !== last) { last = location.href; sendPage(); }

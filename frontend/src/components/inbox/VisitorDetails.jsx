@@ -31,7 +31,7 @@ export function VisitorDetails({ detail, agents, me, onAssign, typing }) {
         <Row label="Activity" testid="visitor-detail-typing">{typing ? <span className="text-[#104e35]">Typing a message</span> : v.online ? "Browsing" : "Inactive"}</Row>
       </Section>
       <Section tag="02" title="Location & device">
-        <Row label="Country" testid="visitor-detail-country">{locationLabel(v)}{v.country_code ? ` (${v.country_code})` : ""}</Row>
+        <Row label="Location" testid="visitor-detail-country">{locationLabel(v)}{v.country_code ? ` (${v.country_code})` : ""}</Row>
         <Row label="Local time">{localTime(v.timezone) ? `${localTime(v.timezone)} · ${v.timezone}` : ""}</Row>
         <Row label="Device">{v.device}</Row>
       </Section>

@@ -40,7 +40,14 @@ function Header({ online, onClose, onEnd, canEnd }) {
   );
 }
 
-export function ChatWidget({ initialPage, page, onOpenChange }) {
+const PANEL = {
+  auto: "fixed inset-0 sm:inset-auto sm:bottom-24 sm:right-6 sm:h-[min(600px,calc(100vh-120px))] sm:w-[380px] sm:rounded-xl sm:ring-1 sm:ring-black/5",
+  floating: "fixed bottom-24 right-6 h-[min(600px,calc(100vh-120px))] w-[380px] rounded-xl ring-1 ring-black/5",
+  full: "fixed inset-0",
+};
+const LAUNCHER_OPEN = { auto: "hidden sm:flex", floating: "flex", full: "hidden" };
+
+export function ChatWidget({ initialPage, page, onOpenChange, layout = "auto" }) {
   const chat = useVisitorChat(initialPage);
   const [open, setOpen] = useState(false);
   const [unread, setUnread] = useState(0);
@@ -62,7 +69,7 @@ export function ChatWidget({ initialPage, page, onOpenChange }) {
   return (
     <>
       {open && (
-        <div data-testid="chat-widget-panel" className="fm-rise fm-shadow-float fixed inset-0 z-[60] flex flex-col overflow-hidden bg-white sm:inset-auto sm:bottom-24 sm:right-6 sm:h-[min(600px,calc(100vh-120px))] sm:w-[380px] sm:rounded-xl sm:ring-1 sm:ring-black/5">
+        <div data-testid="chat-widget-panel" className={`fm-rise fm-shadow-float z-[60] flex flex-col overflow-hidden bg-white ${PANEL[layout]}`}>
           <Header online={online} onClose={() => setOpen(false)} onEnd={chat.endChat} canEnd={visitor?.identified && conversation && !closed} />
           {!chat.ready ? (
             <div className="flex flex-1 items-center justify-center"><Loader2 className="h-5 w-5 animate-spin text-[#104e35]" /></div>
@@ -92,7 +99,7 @@ export function ChatWidget({ initialPage, page, onOpenChange }) {
         </div>
       )}
       <button onClick={() => setOpen((o) => !o)} aria-label={open ? "Close chat" : "Open chat"} data-testid="chat-widget-launcher"
-        className={`fm-shadow-float fixed bottom-6 right-6 z-[61] h-14 w-14 items-center justify-center rounded-full bg-[#104e35] text-white transition-colors hover:bg-[#03402a] ${open ? "hidden sm:flex" : "flex"}`}>
+        className={`fm-shadow-float fixed bottom-6 right-6 z-[61] h-14 w-14 items-center justify-center rounded-full bg-[#104e35] text-white transition-colors hover:bg-[#03402a] ${open ? LAUNCHER_OPEN[layout] : "flex"}`}>
         {open ? <X className="h-5 w-5" /> : <MessageSquare className="h-5 w-5" />}
         {!open && unread > 0 && (
           <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#a12f2e] px-1 text-[11px] font-semibold" data-testid="chat-widget-unread-badge">{unread}</span>

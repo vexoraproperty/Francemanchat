@@ -33,9 +33,14 @@ function SiteHeader() {
           <NavLink to="/contact" className={link} data-testid="site-nav-contact">Contact</NavLink>
         </nav>
         <Link to="/inbox" className="ml-auto rounded-md border border-[#104e35] px-3.5 py-2 text-sm font-medium text-[#104e35] transition-colors hover:bg-[#104e35] hover:text-white md:ml-0" data-testid="site-staff-login-link">
-          Support team login
+          <span className="whitespace-nowrap"><span className="hidden sm:inline">Support team </span><span className="sm:hidden">Staff </span>login</span>
         </Link>
       </div>
+      <nav className="flex gap-6 border-t border-[#efede8] px-5 py-2.5 md:hidden" data-testid="site-mobile-nav">
+        <NavLink to="/products" className={link}>Products</NavLink>
+        <NavLink to="/sample-request" className={link}>Samples</NavLink>
+        <NavLink to="/contact" className={link}>Contact</NavLink>
+      </nav>
     </header>
   );
 }

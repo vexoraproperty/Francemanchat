@@ -3,7 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { Show } from "@clerk/react";
 import ClerkAuthProvider from "@/components/auth/ClerkAuthProvider";
 import { Toaster } from "@/components/ui/sonner";
-import { SupportProvider } from "@/context/SupportContext";
+import { SupportProvider, useSupport } from "@/context/SupportContext";
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import SiteDemo from "@/pages/SiteDemo";
 import WidgetFrame from "@/pages/WidgetFrame";
@@ -23,6 +23,11 @@ function Protected() {
   );
 }
 
+function AdminOnly({ children }) {
+  const { isAdmin } = useSupport();
+  return isAdmin ? children : <Navigate to="/inbox" replace />;
+}
+
 function MainApp() {
   return (
     <ClerkAuthProvider>
@@ -37,9 +42,9 @@ function MainApp() {
           <Route path="/inbox" element={<Inbox />} />
           <Route path="/inbox/:id" element={<Inbox />} />
           <Route path="/visitors" element={<Visitors />} />
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="/team" element={<Team />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route path="/analytics" element={<AdminOnly><Analytics /></AdminOnly>} />
+          <Route path="/team" element={<AdminOnly><Team /></AdminOnly>} />
+          <Route path="/settings" element={<AdminOnly><Settings /></AdminOnly>} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

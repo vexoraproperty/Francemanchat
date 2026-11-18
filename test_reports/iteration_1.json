@@ -1,0 +1,48 @@
+{
+  "summary": "First full run on the Franceman live chat. Backend: 19/19 pytest tests passed (widget session/identify/messages/end, keyword and AI (Claude) answers, offline message sent once, role security 401/403/409, assign rules, close/reopen, search, visitors, analytics, settings, and the visitor and agent WebSockets: typing preview, page tracking, agent typing, instant reply, AI stops after an agent replies). Frontend (Playwright): public site plus widget, prechat validation, quick-answer chips, AI reply, admin sign-in with a Clerk ticket, session kept after refresh, live inbox, visitor details (country/page history/device), live typing preview, agent typing in the widget, reply, Resolve/Reopen, chat-ended banner and new conversation, assign select, status toggle (widget goes offline/online), /visitors live typing and page updates, analytics, team (last-admin 409 toast), settings save persists, embed snippet, pending screen, sign-out, mobile 390px (full-screen widget, bottom nav, list/thread switching, info sheet). One real blocker: the preview dev server sends Cross-Origin-Resource-Policy: same-origin, so embed.js cannot load on an external site (francemann.com).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/widget/identify", "issue": "A name made only of spaces ('   ') passes min_length=1, is then stripped and saved as an empty name. Strip before validating, or reject blank names."},
+      {"endpoint": "POST /api/conversations/{id}/messages", "issue": "An agent reply on a closed conversation sets status=open but leaves closed_at in place and posts no 'reopen' system message, so the visitor widget still treats the chat as closed."},
+      {"endpoint": "GET /api/visitors", "issue": "The sort key `v['last_seen'] and -timestamp` mixes str and float if last_seen is ever empty, which would raise a TypeError. Low risk today."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Embed script (public/embed.js) on an external site", "issue": "The preview frontend serves every file with 'Cross-Origin-Resource-Policy: same-origin' (craco.config.js devServer headers), so <script src=.../embed.js> on another origin fails with net::ERR_BLOCKED_BY_RESPONSE.NotSameOrigin and the widget never appears. With the header stripped in a test, the iframe embed works fully (open/close resize, prechat, thread). Confirm the production host does not send this header, or serve embed.js with 'Cross-Origin-Resource-Policy: cross-origin', for example from a backend /api/embed.js route.", "selector": "iframe[title='Franceman live chat']", "priority": "HIGH"},
+      {"component": "Admin-only routes for the agent role", "issue": "An agent who opens /analytics, /team or /settings directly sees the empty page shell plus an error toast. There is no route guard or redirect (the nav is hidden correctly).", "selector": "[data-testid='analytics-page']", "priority": "LOW"},
+      {"component": "PreChatForm", "issue": "A stale custom error stays on screen: after 'Please enter your name.' appears and the name is then filled in, the browser's own email check blocks submit and the old name error is still shown. Clear prechat-error when inputs change, and use one validation path (custom or native).", "selector": "[data-testid='prechat-error']", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Public site, mobile 390px", "issues": ["The Products/Samples/Contact nav links are hidden on mobile and there is no menu button to reach them. Only 'Support team login' is shown."]},
+      {"screen": "Widget inside the embed iframe (desktop)", "issues": ["The iframe is 420px wide, below the sm breakpoint, so the widget uses the mobile full-bleed layout: the panel sits flush against the right and bottom edges with no rounded card and no launcher button. Size the iframe as panel plus margin, or switch layout based on a parent-supplied flag instead of the iframe width."]},
+      {"screen": "Widget prechat", "issues": ["The commodity picker is a native <select>, not the shadcn Select used in the dashboard. This is minor visual inconsistency."]},
+      {"screen": "Inbox visitor details", "issues": ["The 'Country' row shows 'City, Country (CC)'. Label it 'Location'."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_franceman_chat.py", "/app/backend/tests/clerk_helper.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "HIGH: make embed.js loadable cross-origin (the CORP same-origin header blocks it on francemann.com). Verify on the production host, or serve it from the backend with Cross-Origin-Resource-Policy: cross-origin.",
+    "Reject blank or whitespace-only visitor names in IdentifyIn.",
+    "When an agent replies on a closed conversation, reopen it properly (clear closed_at, post a reopen system message) or block the reply.",
+    "Add a role guard on /analytics, /team and /settings for non-admins.",
+    "Clear the stale prechat-error when inputs change.",
+    "Add a mobile nav menu to the public site, and adjust the widget layout inside the embed iframe."
+  ],
+  "critical_code_review_comments": [
+    "server.py is 647 lines and close to the 700-line limit. Consider splitting the routes into widget, staff and admin modules.",
+    "run_automation sends an AI reply even when an agent is online but the chat is unassigned. This matches the design but can race with a human reply. The agent_replied re-check after the LLM call mitigates it.",
+    "The visitor WebSocket handler in useVisitorChat deletes the token on close codes 4401/4404 but does not start a new session, so the widget stays on 'Reconnecting...' until the page reloads.",
+    "widget/session runs a geo lookup (ip-api.com over HTTP) and creates a new visitor document for every tokenless call, with no rate limit. This is an abuse and DB-growth risk.",
+    "The visitor name 'Visitor {1001+count}' comes from count_documents, so concurrent sessions can get the same name. This is cosmetic."
+  ],
+  "updated_files": ["/app/backend/tests/test_franceman_chat.py", "/app/backend/tests/clerk_helper.py"],
+  "success_rate": {"backend": "100% (19/19)", "frontend": "~92% (all requested flows pass; the external embed is blocked by the CORP header)"},
+  "test_credentials": "Used admin/agent/pending +clerk_test users from /app/memory/test_credentials.md through Clerk sign-in tickets (UI) and session tokens (API). clerk_helper.py reads CLERK_SECRET_KEY with dotenv and never prints it.",
+  "seed_data_creation": "Created TEST_-prefixed visitors and conversations (TEST_Keyword, TEST_AI, TEST_End, TEST_Assign, TEST_WS, TEST_Offline, TEST_UIVisitor, TEST_RealtimeVisitor, TEST_AssignVisitor, TEST_EmbedVisitor, plus one blank-name visitor from the whitespace test). There is no delete API for visitors or conversations, so they remain. Settings were round-tripped and restored, and agent/admin status was set back to online. No role was changed (the last-admin demotion was correctly rejected with 409).",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run backend tests serially: cd /app/backend/tests && python -m pytest test_franceman_chat.py -n 0 -v. Get Clerk tickets with `python clerk_helper.py ticket admin|agent|pending` (single use) and open /sign-in?__clerk_ticket=<t>. On mobile the visible UserButton is the second .cl-userButtonTrigger (use :visible), and visitor-details-panel exists twice (desktop xl column plus mobile sheet). To test the external embed, route a fake origin with page.route and strip the CORP header from embed.js."
+}

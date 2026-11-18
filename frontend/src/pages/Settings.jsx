@@ -65,7 +65,7 @@ export default function Settings() {
       toast.success("Settings saved");
     } catch (e) { toast.error(errMsg(e)); } finally { setSaving(false); }
   };
-  const snippet = `<script src="${window.location.origin}/embed.js" async></script>`;
+  const snippet = `<script src="${process.env.REACT_APP_BACKEND_URL}/api/embed.js" async></script>`;
 
   return (
     <div className="h-full overflow-y-auto fm-scroll" data-testid="settings-page">
